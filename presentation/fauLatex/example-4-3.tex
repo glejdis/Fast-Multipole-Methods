@@ -1,0 +1,50 @@
+\documentclass[final,12pt]{beamer}
+%
+% load the FAU theme
+\usetheme[institute=med,            % Institute, one of 'fau', 'phil', 'rewi', 'med', 'nat', 'tech'
+          % logo=art/FAU_DMM_Logo_rgb_10cm    % (optional) provide a project/institution logo instead of seal
+         ]{fau-4-3}
+\usefonttheme[onlymath]{serif}
+%
+% Load your required packages here...
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+% \usepackage{...}
+% ...
+%
+% Define metadata (title, subtitle [optional], author, instute, date, ...)
+\title{Example presentation based on the FAU Corporate Design Manual}
+\subtitle{Optimized for scientific applications}
+\author[B. Reuter]{Balthasar Reuter}
+\institute[AM1]{Applied Mathematics I, Friedrich-Alexander-University Erlangen-N\"urnberg}
+\date{\today}
+%
+\begin{document}
+%
+% PUT YOUR CONTENT HERE:
+
+\frame[plain]{\titlepage} 
+
+\begin{frame}
+  \frametitle{Some useful headline here}
+  \framesubtitle{...with an explanatory subtitle}
+
+  And typical content...
+  \begin{itemize}
+    \item ...with
+    \item typical
+    \item list.
+  \end{itemize}
+
+  \begin{block}{And a box}
+    as it is often used
+  \end{block}
+\end{frame}
+
+\section{Sectionname}
+
+\section*{Other sectionname}
+
+% END OF CONTENT
+\end{document}
+% end of document
