@@ -1,0 +1,94 @@
+%%
+% Author: Michael Baer (michael.baer@fau.de)
+% Version: 21.04.2017 - 1
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CODE LISTINGS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\RequirePackage{listings}
+%\RequirePackage{accsupp}
+%
+%\renewcommand{\thelstnumber}{% Line number printing mechanism
+%	\protect\BeginAccSupp{ActualText={}}\arabic{lstnumber}\protect\EndAccSupp{}%
+%}
+%\lstset{%
+%	language=C++,
+%	tabsize=2,
+%	basicstyle=\ttfamily\Large,
+%	keywordstyle=\bfseries\color{blue},
+%	commentstyle=\color{green!50!black},
+%	stringstyle=\color{red},
+%	numbers=left,
+%	numbersep=0.5em,
+%	backgroundcolor=\color{yellow!20},
+%	numberstyle=\tt\Large,
+%	% to avoid spaces between characters while copzing
+%	columns=fullflexible,
+%	keepspaces=true,
+%	% box around listing
+%	frame=single,
+%	framesep=\fboxsep,
+%	framerule=\fboxrule,
+%	frameround=tttt, % all 4 corners are round
+%	rulecolor=\color{red}
+%}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ENUMS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% copied from aud slides (thanks to Patrick Kreutzer)
+
+%\usepackage{enumitem}
+%\setitemize{label=\usebeamerfont*{itemize item}\usebeamercolor[fg]{itemize item}\usebeamertemplate{itemize item}}
+%\setitemize[1]{itemsep=0.100cm, labelsep=8pt}
+%\setitemize[2]{itemsep=0.025cm, labelsep=8pt, leftmargin=14.5pt}
+%\setitemize[3]{itemsep=0.025cm, labelsep=8pt, leftmargin=16.5pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% BLOCKS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% copied from aud slides (thanks to Patrick Kreutzer)
+% adapted to have less redundant code
+
+\usepackage[most]{tcolorbox}
+\definecolor{block_blue}{HTML}{1F548A}
+\definecolor{exampleblock_green}{HTML}{148C27}
+\definecolor{alertblock_red}{HTML}{A81010}
+\definecolor{hintblock_gold}{HTML}{D68B00}
+
+% #1 is title
+% #2-#6 are the colors
+% #7 is extra
+\newcommand{\fancyblockBegin}[7]{
+		\ifstrempty{#1}%
+		{%
+			\pgfkeys{tcb/block title/.code={}}
+		}%
+		{%
+			\pgfkeys{tcb/block title/.code={\pgfkeysalso{adjusted title={#1\vphantom{Aq}}}}}
+		}%
+		\begin{tcolorbox}[enhanced,
+							block title,
+							fonttitle=\fontsize{20}{24}\selectfont, fontupper=\fontsize{18}{22}\selectfont,
+							title filled, colframe=#2, colbacktitle=#3, coltitle=#4, colback=#5, coltext=#6,
+							boxrule=0.75pt, arc=2pt, boxsep=2.2pt, left=4pt, right=4pt, top=4pt, bottom=4pt, oversize=-12pt,
+							before skip=8pt, after skip=8pt,
+							fuzzy shadow={0.5pt}{-2pt}{0.12mm}{0.1mm}{black!50!white}]#7
+}
+\newcommand{\fancyblockEnd}{
+	\end{tcolorbox}
+}
+
+% blue normal Box
+\renewenvironment{block}[1]
+	{\fancyblockBegin{#1}{block_blue!87!black}{block_blue}{white}{block_blue!5}{black}{}}
+	{\fancyblockEnd{}}
+\renewenvironment{exampleblock}[1]
+	{\fancyblockBegin{#1}{exampleblock_green!87!black}{exampleblock_green}{white}{exampleblock_green!5}{black}{}}
+	{\fancyblockEnd{}}
+\renewenvironment{alertblock}[1]
+	{\fancyblockBegin{#1}{alertblock_red!87!black}{alertblock_red}{white}{alertblock_red!5}{black}{}}
+	{\fancyblockEnd{}}
+\newenvironment{hintblock}[1]
+	{\fancyblockBegin{#1}{hintblock_gold!87!black}{hintblock_gold}{white}{hintblock_gold!5}{black}{}}
+	{\fancyblockEnd{}}
+\newenvironment{codeblock}[1]
+	{\fancyblockBegin{#1}{black!80}{black!10}{black}{black!90}{white}{\tt}}
+	{\fancyblockEnd{}}
+

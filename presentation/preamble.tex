@@ -1,0 +1,83 @@
+% listings
+\usepackage{listings}
+\lstset{ basicstyle  = \footnotesize
+       , captionpos  = b
+       , numbers     = left
+       , basicstyle  = \ttfamily\Large
+       , numberstyle = \tt\Large
+       , frame       = single
+       , frameround  = tttt
+       }
+
+% math
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{nicefrac}
+\usepackage{siunitx}
+
+\DeclareMathOperator{\fl}{fl}
+\DeclareMathOperator{\range}{range}
+\DeclareMathOperator{\rank}{rank}
+
+% standard stuff
+\usepackage{booktabs}
+\usepackage[iso]{isodate}
+\usepackage[all]{nowidow}
+\usepackage[super]{nth}
+\usepackage[caption = false, font = small]{subfig}
+
+\usepackage{hyperref}
+\hypersetup{ colorlinks = true
+           , citecolor  = black
+           , linkcolor  = black
+           , urlcolor   = black
+           }
+\def\UrlBreaks{\do\/\do-}
+
+\setlength{\parindent}{0mm}
+
+% tikz and pgf
+\usepackage{tikz}
+\usetikzlibrary{calligraphy,decorations.pathreplacing,patterns}
+
+\usepackage{pgfplots}
+\usepgfplotslibrary{colorbrewer}
+\pgfplotsset{compat=1.17}
+\pgfplotsset{cycle list/Set1}
+
+% useful stuff
+\usepackage[ backend=biber
+           , bibstyle=ieee
+           , citestyle=numeric-comp
+           , sortcites=true
+           , maxbibnames=30
+           , bibencoding=utf8
+           , alldates=comp
+           ]{biblatex}
+\usepackage{todonotes}
+\presetkeys{todonotes}{inline}{}
+
+% cleveref needs to be loaded last
+\usepackage[capitalise, noabbrev]{cleveref}
+
+% shortcuts
+\newcommand{\der}[3][]{\frac{\partial #1 #2}{\partial #3 #1}}
+\newcommand{\diff}{\mathop{}\!\mathrm{d}}
+\newcommand{\mat}[1]{\begin{pmatrix}#1\end{pmatrix}}
+\renewcommand{\qed}{\hfill \ensuremath{\square}}
+\newcommand{\shall}{\overset{!}{=}}
+\newcommand{\vct}[1]{\boldsymbol{#1}}
+
+% beamer theme
+\usepackage{caption}
+\DeclareCaptionFont{14pt}{\fontsize{14pt}{14pt}\selectfont}
+\captionsetup{font={14pt},labelfont={14pt}}
+
+\usepackage{awesome}
+\input{praeamble/prae_beamer.tex}
+
+\usefolder{theme}
+\usetheme{fau-4-3}
+
+\addbibresource{references.bib}
+\graphicspath{{./img/}}
