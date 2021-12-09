@@ -1,0 +1,114 @@
+\ProvidesPackage{beamerthemefau-16-9}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\RequirePackage{ifthen}
+\RequirePackage{geometry}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newif\iffau@isfau\fau@isfautrue
+\newif\iffau@isphil\fau@isphilfalse
+\newif\iffau@isrewi\fau@isrewifalse
+\newif\iffau@ismed\fau@ismedfalse
+\newif\iffau@isnat\fau@isnatfalse
+\newif\iffau@istech\fau@istechfalse
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\DeclareOptionBeamer{institute}{%
+  \PassOptionsToPackage{institute=#1}{beamercolorthemefau}
+  \ifthenelse{\equal{#1}{fau}}{\fau@isfautrue}{\fau@isfaufalse}%
+  \ifthenelse{\equal{#1}{phil}}{\fau@isphiltrue}{\fau@isphilfalse}%
+  \ifthenelse{\equal{#1}{rewi}}{\fau@isrewitrue}{\fau@isrewifalse}%
+  \ifthenelse{\equal{#1}{med}}{\fau@ismedtrue}{\fau@ismedfalse}%
+  \ifthenelse{\equal{#1}{nat}}{\fau@isnattrue}{\fau@isnatfalse}%
+  \ifthenelse{\equal{#1}{tech}}{\fau@istechtrue}{\fau@istechfalse}%
+}
+\DeclareOptionBeamer{variant}{%
+  \PassOptionsToPackage{variant=#1}{beamercolorthemefau}
+}
+\DeclareOptionBeamer{logo}{%
+  \PassOptionsToPackage{userlogo=#1}{beamerinnerthemefau}
+  \PassOptionsToPackage{userlogo=#1}{beamerouterthemefau}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ProcessOptionsBeamer
+\selectcolormodel{rgb}
+\mode<presentation>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+\iffau@isfau
+  \PassOptionsToPackage{logo=art/fau-logo}{beamerinnerthemefau}
+  \PassOptionsToPackage{logo=art/fau-logo}{beamerouterthemefau}
+  \PassOptionsToPackage{logobreite=45.4mm}{beamerinnerthemefau}
+  \PassOptionsToPackage{logohoehe=9.1mm}{beamerinnerthemefau}
+  \PassOptionsToPackage{logobreite=29.2mm}{beamerouterthemefau}
+  \PassOptionsToPackage{logohoehe=5.8mm}{beamerouterthemefau}
+\fi
+\iffau@isphil
+  \PassOptionsToPackage{logo=art/fau-logo-philtheo}{beamerinnerthemefau}
+  \PassOptionsToPackage{logo=art/fau-logo-philtheo}{beamerouterthemefau}
+  \PassOptionsToPackage{logobreite=69.77mm}{beamerinnerthemefau}
+  \PassOptionsToPackage{logohoehe=19.39mm}{beamerinnerthemefau}
+  \PassOptionsToPackage{logobreite=44.63mm}{beamerouterthemefau}
+  \PassOptionsToPackage{logohoehe=12.4mm}{beamerouterthemefau}
+\fi
+\iffau@isrewi
+  \PassOptionsToPackage{logo=art/fau-logo-rechtwirt}{beamerinnerthemefau}
+  \PassOptionsToPackage{logo=art/fau-logo-rechtwirt}{beamerouterthemefau}
+  \PassOptionsToPackage{logobreite=71.04mm}{beamerinnerthemefau}
+  \PassOptionsToPackage{logohoehe=19.39mm}{beamerinnerthemefau}
+  \PassOptionsToPackage{logobreite=45.45mm}{beamerouterthemefau}
+  \PassOptionsToPackage{logohoehe=12.4mm}{beamerouterthemefau}
+\fi
+\iffau@ismed
+  \PassOptionsToPackage{logo=art/fau-logo-med}{beamerinnerthemefau}
+  \PassOptionsToPackage{logo=art/fau-logo-med}{beamerouterthemefau}
+  \PassOptionsToPackage{logobreite=61.97mm}{beamerinnerthemefau}
+  \PassOptionsToPackage{logohoehe=16.77mm}{beamerinnerthemefau}
+  \PassOptionsToPackage{logobreite=39.56mm}{beamerouterthemefau}
+  \PassOptionsToPackage{logohoehe=10.7mm}{beamerouterthemefau}
+\fi
+\iffau@isnat
+  \PassOptionsToPackage{logo=art/fau-logo-nat}{beamerinnerthemefau}
+  \PassOptionsToPackage{logo=art/fau-logo-nat}{beamerouterthemefau}
+  \PassOptionsToPackage{logobreite=50.3mm}{beamerinnerthemefau}
+  \PassOptionsToPackage{logohoehe=14.7mm}{beamerinnerthemefau}
+  \PassOptionsToPackage{logobreite=31.1mm}{beamerouterthemefau}
+  \PassOptionsToPackage{logohoehe=9.1mm}{beamerouterthemefau}
+\fi
+\iffau@istech
+  \PassOptionsToPackage{logo=art/fau-logo-tech}{beamerinnerthemefau}
+  \PassOptionsToPackage{logo=art/fau-logo-tech}{beamerouterthemefau}
+  \PassOptionsToPackage{logobreite=60.44mm}{beamerinnerthemefau}
+  \PassOptionsToPackage{logohoehe=16.77mm}{beamerinnerthemefau}
+  \PassOptionsToPackage{logobreite=38.59mm}{beamerouterthemefau}
+  \PassOptionsToPackage{logohoehe=10.7mm}{beamerouterthemefau}
+\fi
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\PassOptionsToPackage{standx=195.2mm}{beamerinnerthemefau}
+\PassOptionsToPackage{standy=5.1mm}{beamerinnerthemefau}
+\PassOptionsToPackage{logoraum=27.4mm}{beamerinnerthemefau}
+\PassOptionsToPackage{userlogobreite=75mm}{beamerinnerthemefau}
+\PassOptionsToPackage{userlogostandx=0mm}{beamerinnerthemefau}
+\PassOptionsToPackage{userlogostandy=7mm}{beamerinnerthemefau}
+\PassOptionsToPackage{siegelbreite=40.6mm}{beamerinnerthemefau}
+\PassOptionsToPackage{urlraum=5.7mm}{beamerinnerthemefau}
+\PassOptionsToPackage{absenderraum=5.4mm}{beamerinnerthemefau}
+\PassOptionsToPackage{absenderhoehe=27mm}{beamerinnerthemefau}
+\PassOptionsToPackage{linienstaerke=0.5mm}{beamerinnerthemefau}
+\PassOptionsToPackage{skipx=-7.7mm}{beamerinnerthemefau}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\PassOptionsToPackage{standx=217.2mm}{beamerouterthemefau}
+\PassOptionsToPackage{standy=2.6mm}{beamerouterthemefau}
+\PassOptionsToPackage{logoraum=13.7mm}{beamerouterthemefau}
+\PassOptionsToPackage{urlraum=5.7mm}{beamerouterthemefau}
+\PassOptionsToPackage{absenderraum=5.4mm}{beamerouterthemefau}
+\PassOptionsToPackage{absenderhoehe=13.7mm}{beamerouterthemefau}
+\PassOptionsToPackage{absenderskip=13.5mm}{beamerouterthemefau}
+\PassOptionsToPackage{linienstaerke=0.5mm}{beamerouterthemefau}
+\PassOptionsToPackage{outlinestaerke=.7pt}{beamerouterthemefau}
+\PassOptionsToPackage{userlogobreite=75mm}{beamerouterthemefau}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\geometry{paperwidth=254mm,paperheight=142.9mm,left=0mm,right=0mm,top=0mm,bottom=0mm}
+\usefonttheme{fau}
+\usecolortheme{fau}
+\useinnertheme{fau}
+\useoutertheme{fau}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mode<all>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

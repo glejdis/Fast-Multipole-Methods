@@ -1,0 +1,70 @@
+\documentclass[final]{beamer} % beamer 3.10: do NOT use option hyperref={pdfpagelabels=false} !
+% \documentclass[final,hyperref={pdfpagelabels=false}]{beamer} % beamer 3.07: get rid of beamer warnings
+%
+% load the FAU theme
+\usetheme[size=a0,                  % Choose paper size (a0, a1, a2, a3, a4)
+          institute=nat,            % Institute, one of 'fau', 'phil', 'rewi', 'med', 'nat', 'tech'
+          variant=fond2,
+          url=math.fau.de,          % URL to display in bottom left corner (optional, default: www.fau.de)
+          signature=$<$surname$>$@math.fau.de,  % Signature to display in bottom right corner (optional)
+          logo=art/FAU_DMM_Logo_rgb_10cm
+         ]{fau-portrait}
+%
+% Load your required packages here...
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+% \usepackage{...}
+% ...
+%
+% Define metadata (title, subtitle [optional], author, instute, date, ...)
+\title{Example poster based on the FAU Corporate Design\\Manual}
+\subtitle{Optimized for scientific applications}
+\author{Balthasar Reuter}
+\institute{Applied Mathematics I, Friedrich-Alexander-University Erlangen-N\"urnberg}
+\date{\today}
+%
+\begin{document}
+\begin{frame}{\inserttitle}{\insertsubtitle}
+%
+% PUT YOUR CONTENT HERE:
+
+  \begin{center}
+    \LARGE Put your content here...
+  \end{center}
+
+  \vfill
+
+  \begin{flushleft}
+    \large ...and here...
+  \end{flushleft}
+
+  \vfill
+
+  \begin{flushright}
+    \Large ...or here?!
+  \end{flushright}
+
+
+  \vfill
+
+  Fill everything the way you are used to -- the same way as with \LaTeX~and \texttt{beamer}.
+  This means, \textbf{all} the \emph{usual} commands and environments are available!
+
+  \vfill
+
+  \begin{columns}[c]
+    \hfill
+    \begin{column}{.45\textwidth}
+      \begin{block}{Blocks are available as well...}
+        ... with body text and headlines ...
+      \end{block}
+    \end{column}
+    \begin{column}{.45\textwidth}
+      You can use columns in the same way as in presentations.
+    \end{column}
+  \end{columns}
+
+% END OF CONTENT
+\end{frame}
+\end{document}
+% end of document

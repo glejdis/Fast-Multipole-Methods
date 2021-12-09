@@ -1,0 +1,91 @@
+%-------------------------------------------------------------------------------
+% Color theme file
+%-------------------------------------------------------------------------------
+
+\mode<presentation>
+
+
+% Farbdefinitionen
+\definecolor{faublue}{RGB}{0,51,102}
+\definecolor{faugrey}{RGB}{150,150,150}
+\definecolor{faugreyblock}{RGB}{230,230,230}
+\definecolor{fauwhite}{RGB}{255,255,255}
+\definecolor{faudb1}{RGB}{3,36,83}
+\definecolor{faulb1}{RGB}{98,140,171}
+\definecolor{faur1}{RGB}{179,0,52}
+\definecolor{faudb2}{RGB}{2,30,68}
+\definecolor{faulb2}{RGB}{175,192,208}
+\definecolor{faur2}{RGB}{158,0,47}
+\definecolor{faugreen1}{RGB}{0,153,153}
+\definecolor{faugreen2}{RGB}{153,204,0}
+\definecolor{faugreenfg}{RGB}{243,249,244}
+\definecolor{faugreenblock}{RGB}{3,141,30}
+\definecolor{fauredfg}{RGB}{251,243,243}
+\definecolor{fauredtitle}{RGB}{170,12,2}
+\definecolor{faubluefg}{RGB}{244,246,249}
+\definecolor{faubluetitle}{RGB}{27,83,140}
+\definecolor{fauyellowfg}{RGB}{243,249,244}
+\definecolor{fauyellowtitle}{RGB}{216,140,0}
+\definecolor{faucodefg}{RGB}{243,249,244}
+\definecolor{faucodefog}{RGB}{230,230,230}
+\definecolor{faucodetitle}{RGB}{26,26,26}
+\definecolor{faublack}{RGB}{0,0,0}
+
+\definecolor{block_blue}{HTML}{1F548A}
+\definecolor{exampleblock_green}{HTML}{148C27}
+\definecolor{alertblock_red}{HTML}{A81010}
+\definecolor{hintblock_gold}{HTML}{D68B00}
+
+
+% Struktur
+\setbeamercolor{structure}{fg=faublue}
+
+% Titel
+\setbeamercolor{title page}{fg=white}
+\setbeamercolor{titlelike}{parent=structure}
+\setbeamercolor{frametitle}{parent=titlelike}
+
+% normaler Text
+\setbeamercolor{normal text}{fg=black,bg=white}
+\setbeamercolor{alerted text}{fg=red}
+\setbeamercolor{example text}{fg=green!50!black}
+
+% Fusszeile
+\setbeamercolor{footline}{fg=faugrey}
+
+% Ueberschriften
+\setbeamercolor{caption}{fg=black}
+\setbeamercolor{caption name}{fg=black}
+ 
+
+%%%%%%%%%%%%%%%%%%%%%%%% Aufzaehlungen und Listen %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Enumerate item
+\setbeamercolor{enumerate item}{fg=faublue}
+\setbeamercolor{enumerate subitem}{fg=faublue}
+\setbeamercolor{enumerate subsubitem}{fg=faublue}
+
+% Itemize item
+\setbeamercolor{itemize item}{fg=faublue}
+\setbeamercolor{itemize subitem}{fg=faublue}
+\setbeamercolor{itemize subsubitem}{fg=faublue}
+
+% Description item
+\setbeamercolor{description item}{fg=faublue}
+\setbeamercolor{description subitem}{fg=faublue}
+\setbeamercolor{description subsubitem}{fg=faublue}
+
+%%%%%%%%%%%%%%%%%%%%%% Aufzaehlungen und Listen Ende %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Block environment
+
+\setbeamercolor{block title}{use=structure,fg=white,bg=faulb2!75!black}
+\setbeamercolor{block title alerted}{use=alerted text,fg=white,bg=fauredtitle}
+\setbeamercolor{block title example}{use=example text,fg=fauwhite,bg=faubluetitle}
+
+\setbeamercolor{block body}{parent=structure,fg=black,use=block title,bg=faubluefg}
+\setbeamercolor{block body alerted}{parent=alerted text,fg=black,use=block title alerted,bg=fauredfg}
+\setbeamercolor{block body example}{parent=example text,fg=black,use=block title example,bg=faubluefg}
+
+\mode
+<all>
+

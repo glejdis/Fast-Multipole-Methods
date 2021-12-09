@@ -1,0 +1,39 @@
+%-------------------------------------------------------------------------------
+% Main file
+%-------------------------------------------------------------------------------
+
+\mode<presentation>
+
+\newif\ifbeamer@cleanframe
+\beamer@cleanframefalse
+
+\DeclareOptionBeamer{clean}{\beamer@cleanframetrue}
+\ProcessOptionsBeamer
+
+\pdfpageattr {/Group << /S /Transparency /I true /CS /DeviceRGB>>}
+
+% Einbinden der einzelnen Theme-Dateien
+\usefonttheme{fau-4-3}
+\usecolortheme{fau-4-3}
+\useinnertheme{fau-4-3}
+\useoutertheme{fau-4-3}
+%\usefonttheme[onlymath]{serif}
+
+% Graphiken
+% FAU-Logos, Lehrstuhllogos fuer Titelseiten und Kopfzeilen
+% FAU allgemein
+\pgfdeclareimage[height=20.7mm]{faulogo}{art/fau-logo-tech}
+\pgfdeclareimage[height=9.5mm]{faulogosmall}{art/fau-logo-tech}
+
+%
+\pgfdeclareimage[width=\paperwidth,height=135.1mm]{fauschloss}{art/4_3_title}  % Hintergrundgraphik fuer Titelseite
+\pgfdeclareimage[width=\paperwidth,height=55.4mm]{fauschlosscropped}{art/4_3_chapter} % Hintergrundgraphik fuer Section-Seite
+
+\pgfdeclareimage[height=24mm]{projectbox}{../paper/usi.png}
+\pgfdeclareimage[height=13.8mm]{projectboxsmall}{../paper/usi.png}
+
+\setbeamertemplate{projectbox}{\includegraphics[height=24mm]{../paper/usi.png}}
+\setbeamertemplate{projectboxsmall}{\raggedleft\includegraphics[height=10mm]{../paper/usi.png}}
+
+\mode
+<all>
