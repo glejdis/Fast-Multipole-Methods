@@ -1,0 +1,131 @@
+\date{\today}
+
+\usepackage{xkeyval}
+
+\makeatletter
+
+\define@boolkey{load}{all}     [true]{}
+\define@boolkey{load}{base}    [true]{}
+
+\define@boolkey{load}{korean}  [true]{}
+\define@boolkey{load}{listings}[true]{}
+\define@boolkey{load}{math}    [true]{}
+\define@boolkey{load}{std}     [true]{}
+\define@boolkey{load}{task}    [true]{}
+\define@boolkey{load}{tikz}    [true]{}
+\define@boolkey{load}{util}    [true]{}
+
+\newcommand{\load}[1]{%
+  % set keys
+  \presetkeys{load}{base}{}
+  \setkeys{load}{#1}
+
+  \ifKV@load@base
+    \presetkeys{load}{math,std,task}{}
+  \fi
+
+  \ifKV@load@all
+    \presetkeys{load}{listings,math,std,task,tikz}{}
+  \fi
+
+  \setkeys{load}{#1}
+
+  % load packages
+  \ifKV@load@korean
+    \usepackage{kotex}
+  \fi
+
+  \ifKV@load@listings
+    \usepackage{listings}
+    \lstset{ basicstyle  = \footnotesize
+           , captionpos  = b
+           , frame       = lines
+           , numbers     = left
+           , numberstyle = \tiny
+           }
+  \fi
+
+  \ifKV@load@math
+    \usepackage{amsmath}
+    % \usepackage{amssymb} % conflicts with mathdesign loaded in finalproject.cls
+    \usepackage{nicefrac}
+    \usepackage{siunitx}
+
+    \DeclareMathOperator{\fl}{fl}
+    \DeclareMathOperator{\range}{range}
+    \DeclareMathOperator{\rank}{rank}
+  \fi
+
+  \ifKV@load@std
+    \usepackage{booktabs}
+    \usepackage{enumitem}
+    \usepackage[iso]{isodate}
+    \usepackage[all]{nowidow}
+    \usepackage[super]{nth}
+    \usepackage[caption = false, font = small]{subfig}
+
+    \usepackage{hyperref}
+    \hypersetup{ colorlinks = true
+               , citecolor  = black
+               , linkcolor  = black
+               , urlcolor   = black
+               }
+    \def\UrlBreaks{\do\/\do-}
+
+    \setlength{\parindent}{0mm}
+  \fi
+
+  \ifKV@load@task
+    \usepackage[most]{tcolorbox}
+    \newtcolorbox[auto counter]{task}
+      { title           = {Task~\thetcbcounter \par}
+      , before          = {\bigskip}
+      , after           = {\medskip}
+      , fonttitle       = {\scshape}
+      , colback         = {black!5!white}
+      , coltext         = {black}
+      , coltitle        = {black}
+      , borderline west = {3pt}{0pt}{black}
+      , frame hidden
+      , boxrule         = 0mm
+      , boxsep          = 0mm
+      , enhanced jigsaw
+      , attach title to upper
+      }
+  \fi
+
+  \ifKV@load@tikz
+    \usepackage{pgfplots}
+    \pgfplotsset{compat=1.17}
+    \usepackage{tikz}
+    \usetikzlibrary{calligraphy,decorations.pathreplacing,patterns}
+    \usepgfplotslibrary{colorbrewer}
+  \fi
+
+  \ifKV@load@util
+    \usepackage[ backend=biber
+               , bibstyle=ieee
+               , citestyle=numeric-comp
+               , sortcites=true
+               , maxbibnames=30
+               , bibencoding=utf8
+               , alldates=comp
+               ]{biblatex}
+    \usepackage{multicol}
+    \usepackage{todonotes}
+  \fi
+
+  \ifKV@load@std
+    % cleveref needs to be loaded last
+    \usepackage[capitalise, noabbrev]{cleveref}
+  \fi
+}
+
+\makeatother
+
+\newcommand{\der}[3][]{\frac{\partial #1 #2}{\partial #3 #1}}
+\newcommand{\diff}{\mathop{}\!\mathrm{d}}
+\newcommand{\mat}[1]{\begin{pmatrix}#1\end{pmatrix}}
+\renewcommand{\qed}{\hfill \ensuremath{\square}}
+\newcommand{\shall}{\overset{!}{=}}
+\newcommand{\vct}[1]{\boldsymbol{#1}}
