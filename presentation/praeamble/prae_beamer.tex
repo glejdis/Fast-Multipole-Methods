@@ -1,0 +1,77 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%	   		FANCY BEAMER STUFF			%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\makeatletter
+\def\neg #1{\mkern 1.5mu\overline{\mkern-1.5mu#1\mkern-1.5mu}\mkern 1.5mu}
+%\def\neg\negbool
+  \def\beamer@calltheme#1#2#3{%
+    \def\beamer@themelist{#2}
+    \@for\beamer@themename:=\beamer@themelist\do
+    {\usepackage[{#1}]{\beamer@themelocation/#3\beamer@themename}}}
+
+  \def\usefolder#1{
+    \def\beamer@themelocation{#1}
+  }
+  \def\beamer@themelocation{}
+  
+\AtBeginPart{%
+    \addtocontents{parttoc}{\protect\beamer@partintoc{\llnameS}{\beamer@partnameshort}{\the\c@page}}%
+}
+\newcommand{\parttableofcontents}{\@starttoc{parttoc}}
+\newcommand{\beamer@partintoc}[3]{#2\par}
+\makeatother
+
+\makeatletter
+\let\@@magyar@captionfix\relax
+\makeatother
+
+\setbeamertemplate{caption}[numbered]% Number float-like environments
+\captionsetup[figure]{labelfont={color=faublue}}
+
+\usepackage{diagbox}
+
+\newif\ifhintpage
+\newif\ifovp
+\newif\ifshowall
+\showallfalse
+\ovpfalse
+
+\newcommand{\onlyS}[1]{\ifovptrue #1 \fi}
+\newcommand{\onlyB}[1]{\ifovptrue \else #1 \fi}
+\newcommand{\ovp}{\ovptrue}
+
+\newcommand{\Sum}{\ensuremath \Sigma}
+
+\newcommand{\hintpage}[0]{
+\ifhintpage
+\begin{frame}[plain,c]
+\frametitle{Wichtiger Hinweis}
+\begin{minipage}{\textwidth}
+		Dieser Foliensatz enthält den Inhalt der Übung zur \glqq Algorithmik kontinuierlicher Systeme\grqq{} des Sommersemesters 2019. Für den Inhalt dieses Foliensatzes ist der Author allein verantwortlich. Der Foliensatz ist \textbf{inoffiziell} und stellt damit \textbf{keine} Veröffentlichung des Lehrstuhls dar. Bei Unstimmigkeiten und eventuell vorhandenen Fehlern bitte ich um eine \href{mailto:florian.ff.frank@fau.de}{E-Mail}\footnote{an florian.ff.frank@fau.de}.
+\end{minipage}
+\end{frame} \hintpagefalse\fi}
+
+
+\def\inserttheoremheadfont{\the\thm@headfont}
+\def\inserttheoremblockenv{theoremblock}
+
+% Redefine `\rowcolor` to allow a beamer overlay specifier
+% New syntax: \rewcolor<overlay>[color model]{color}[left overhang][right overhang]
+\makeatletter
+% Open `\noalign` and check for overlay specification:
+\def\rowcolor{\noalign{\ifnum0=`}\fi\bmr@rowcolor}
+\newcommand<>{\bmr@rowcolor}{%
+    \alt#1%
+        {\global\let\CT@do@color\CT@@do@color\@ifnextchar[\CT@rowa\CT@rowb}% Rest of original `\rowcolor`
+        {\ifnum0=`{\fi}\@gooble@rowcolor}% End `\noalign` and gobble all arguments of `\rowcolor`.
+}
+% Gobble all normal arguments of `\rowcolor`:
+\newcommand{\@gooble@rowcolor}[2][]{\@gooble@rowcolor@}
+\newcommand{\@gooble@rowcolor@}[1][]{\@gooble@rowcolor@@}
+\newcommand{\@gooble@rowcolor@@}[1][]{\ignorespaces}
+\makeatother
+
+%\renewcommand<>{\rowcolor}[1]{\only#2\beameroriginal{\rowcolor}{#1}}
+
+
