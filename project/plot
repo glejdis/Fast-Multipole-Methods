@@ -1,0 +1,87 @@
+#!/bin/bash
+
+data="data"
+plots="plots"
+
+mkdir -p ${plots}
+
+for dir in ${data}/*
+do
+  sim=${dir##*/}
+  echo $sim
+
+  for file in ${data}/${sim}/f-*.dat
+  do
+    if [ -e ${file} ]; then
+      step=$(basename $file .dat | cut -d '-' -f 2)
+
+      f=${data}/${sim}/f-${step}.dat
+      w=${data}/${sim}/w-${step}.dat
+      a=${data}/${sim}/a-${step}.dat
+      b=${data}/${sim}/b-${step}.dat
+      plot=${plots}/${sim}/ps-${step}.png
+
+      mkdir -p ${plots}/${sim}
+
+      cmd="set terminal pngcairo size 400, 400 font \",10\";
+           set output \"${plot}\";
+           plot [0:15] [0:15] \"${f}\" with points pt 7 lc rgb \"blue\" notitle,
+                              \"${w}\" with points pt 7 lc rgb \"gray\" notitle,
+                              \"${a}\" with points pt 7 lc rgb \"red\" notitle,
+                              \"${b}\" with points pt 7 lc rgb \"green\" notitle"
+      gnuplot -e "$cmd" 2> /dev/null
+    fi
+  done
+
+  if [ -e ${data}/${sim}/density.dat ]; then
+    cmd="set terminal pngcairo size 800, 800 font \",20\";
+         set output \"${plots}/${sim}-density.png\";
+         set key off;
+         plot [0:15] [0:15] \"${data}/${sim}/density.dat\" with image"
+    gnuplot -e "$cmd"
+  fi
+
+  if [ -e ${data}/${sim}/velocity.dat ]; then
+    scale=0.2
+    if [ "$sim" = "Poiseuille-N900-dt0.01" ]; then
+      scale=0.5
+    fi
+    cmd="set terminal pngcairo size 800, 800 font \",20\";
+         set output \"${plots}/${sim}-velocity.png\";
+         set key off;
+         plot [0:15] [0:15] \"${data}/${sim}/velocity.dat\" using 1:2:(\$3*${scale}):(\$4*${scale}) with vectors"
+    gnuplot -e "$cmd"
+  fi
+
+  for file in  ${data}/${sim}/*-avg-*.dat
+  do
+    if [ -e ${file} ]; then
+      quantity=$(basename $file .dat | cut -d '-' -f 1)
+      axis=$(basename $file .dat | cut -d '-' -f 3)
+      cmd="set terminal pngcairo size 800, 800 font \",20\";
+           set output \"${plots}/${sim}-${quantity}-avg-${axis}.png\";
+           set key off;
+           set xlabel \"${axis}\";
+           set ylabel \"${quantity}\";
+           plot [0:15] \"${file}\" with lines"
+      gnuplot -e "$cmd"
+    fi
+  done
+
+  if [ -e ${data}/${sim}/observables.dat ]; then
+    cmd="set terminal pngcairo size 800, 800 font \",20\";
+         set output \"${plots}/${sim}-temperature.png\";
+         set key autotitle columnhead;
+         set logscale y;
+         plot \"${data}/${sim}/observables.dat\" using 1:4 with lines"
+    gnuplot -e "$cmd"
+  fi
+
+  if [ -e ${data}/${sim}/trajectory.dat ]; then
+    cmd="set terminal pngcairo size 400, 400 font \",10\";
+         set output \"${plots}/${sim}-trajectory.png\";
+         set key autotitle columnhead;
+         plot [0:15] [0:15] \"${data}/${sim}/trajectory.dat\" with dots notitle"
+    gnuplot -e "$cmd"
+  fi
+done
