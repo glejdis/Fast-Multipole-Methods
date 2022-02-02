@@ -1,0 +1,43 @@
+\documentclass[english]{finalproject}
+
+\captionsetup{labelfont={bf}}
+
+\input{preamble.tex}
+\load{util, tikz}
+\input{colors.tex}
+
+% Title (and subtitle) of the project
+\title{Fast Multipole Methods}
+%\subtitle{(optional subtitle)}
+
+% Group members for the final project (comment out the unnecessary entries)
+\begin{groupmembers}
+\studentA{Daniel }{}{Bauer  }
+\studentB{Glejdis}{}{Shkëmbi}
+\studentC{Michael}{}{Zikeli }
+\end{groupmembers}
+
+\newacronym{fmm}{FMM}{Fast Multipole Method}
+
+\abstract {
+  The Fast Multipole Method is a numerical technique developed to decrease the time complexity of calculating long-ranged forces in N-body simulation problems.
+  In contrast to typical N-body problem solvers, which require $\mathcal{O}(N ^ 2)$ operations, the Fast Multipole Method runs in linear time, without severely compromising accuracy.
+  There are several other applications where the Fast Multipole Method reduces the complexity to $\mathcal{O}(N)$, such as matrix-vector multiplication, LU-factorization or acceleration of the iterative solver in the method of moments.
+  Within this report, we introduce the Fast Multipole Method for the gravitational N-body problem from a theoretical point of view and implement a 2D spiral galaxy simulation using the Fast Multipole Method with adaptive trees.
+  The initial build of the tree requires a time of $\mathcal{O}(N \log N)$ while for the main Fast Multipole Method we achieve linear complexity $\mathcal{O}(N)$.
+}
+
+\begin{document}
+  \maketitle
+
+  \input{01-introduction.tex}
+  \input{02-algorithm.tex}
+  \input{03-operators.tex}
+  \input{04-implementation.tex}
+  \input{05-results.tex}
+
+  \clearpage
+  \bibliographystyle{abbrv}
+  \bibliography{references}
+  \nocite{*}
+\end{document}

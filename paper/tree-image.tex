@@ -1,0 +1,143 @@
+\begin{figure}
+  \centering
+  \null\hfill
+  \subfloat{%
+    \begin{tikzpicture}[scale=1]
+    \pgfmathsetseed{17}
+
+      \coordinate (ydist) at (0,1);
+      \coordinate (xdist) at (1,0);
+
+      \coordinate (a) at (0,0);
+
+        \coordinate (b) at ($ (a) - (ydist) - 2*(xdist) $);
+        \draw (a) -- (b);
+
+          \coordinate (d) at ($ (b) - (ydist) - (xdist) $);
+          \draw (b) -- (d);
+
+            \coordinate (h) at ($ (d) - (ydist) - 0.5*(xdist) $);
+            \draw (d) -- (h);
+            \coordinate (i) at ($ (d) - (ydist) + 0.5*(xdist) $);
+            \draw (d) -- (i);
+
+          \coordinate (e) at ($ (b) - (ydist) + (xdist) $);
+          \draw (b) -- (e);
+
+            \coordinate (j) at ($ (e) - (ydist) - 0.5*(xdist) $);
+            \draw (e) -- (j);
+            \coordinate (k) at ($ (e) - (ydist) + 0.5*(xdist) $);
+            \draw (e) -- (k);
+
+        \coordinate (c) at ($ (a) - (ydist) + 2*(xdist) $);
+        \draw (a) -- (c);
+
+          \coordinate (f) at ($ (c) - (ydist) - (xdist) $);
+          \draw (c) -- (f);
+
+            \coordinate (l) at ($ (f) - (ydist) - 0.5*(xdist) $);
+            \draw (f) -- (l);
+            \coordinate (m) at ($ (f) - (ydist) + 0.5*(xdist) $);
+            \draw (f) -- (m);
+
+          \coordinate (g) at ($ (c) - (ydist) + (xdist) $);
+          \draw (c) -- (g);
+
+            \coordinate (n) at ($ (g) - (ydist) - 0.5*(xdist) $);
+            \draw (g) -- (n);
+            \coordinate (o) at ($ (g) - (ydist) + 0.5*(xdist) $);
+            \draw (g) -- (o);
+
+      \foreach \x in { (a), (b), (c)
+                     , (d), (e), (f)
+                     , (g), (h), (i)
+                     , (j), (k), (l)
+                     , (m), (n), (o) } {
+        \draw[fill] \x circle (2pt);
+      }
+
+
+      \coordinate (step) at (0, 0.8);
+      \coordinate (startingPoint) at ($ (h) - (step) $);
+      \foreach \i in {0,...,7}{
+        \def\radius{0.2}
+        \foreach \tmp in {1,...,50} {
+          \coordinate (z) at (rnd*2*\radius-\radius, rnd*2*\radius-\radius);
+          \draw[fill, black!40] ($ \i*(xdist)+(startingPoint)+(z)$) circle (0.5pt);
+        }
+      }
+      \draw[fill, highlight] ($ 4*(xdist)+(startingPoint)+(z)$) circle (1pt)
+        node[right] {\scriptsize\textcolor{black}{$p_j$}};
+      \draw[fill, black!40] ($ 3*(xdist)+(startingPoint)+(z)$) circle (1pt)
+        node[right] {\scriptsize\textcolor{black}{$p_i$}};
+
+      \draw[fill, tfi] (l) circle (2pt);
+      \node[draw=tfi, dashed, inner sep=8pt] at ($ 4*(xdist)+(startingPoint)$){};
+      \draw[tfi, thick, ->] ($ (l)-(0,0.1) $)
+        -- ($ 4*(xdist)+(startingPoint)+(0,0.4)$)
+        node[midway, right] {\scriptsize\textcolor{black}{$\vct{T}_{\tau}^{\mathrm{tfi}}$}};
+
+      \node[draw=dir, dashed, inner sep=8pt] at ($ 3*(xdist)+(startingPoint)$){};
+      \draw[dir, thick, ->] ($ 3*(xdist)+(startingPoint)+(0.3,0)$) -- ($ 4*(xdist)+(startingPoint)-(0.3,0)$);
+      \node[draw=dir, dashed, inner sep=8pt] at ($ 5*(xdist)+(startingPoint)$){};
+      \draw[dir, thick, ->] ($ 5*(xdist)+(startingPoint)-(0.3,0)$) -- ($ 4*(xdist)+(startingPoint)+(0.3,0)$);
+
+      \draw[ifo, thick, ->] ($ (j) + (0.1, +0.05) $)
+        .. controls ($ (l) - (xdist) + (0,0.3) $)
+        .. ($ (l) + (-0.1, +0.05) $);
+      \draw[ifo, thick, ->] ($ (n) + (-0.1, +0.05) $)
+        .. controls ($ (l) + (xdist) + (0,0.15) $)
+        .. ($ (l) + (0.1, 0) $);
+      \draw[ifo, thick, ->] ($ (o) + (-0.1, +0.05) $)
+        .. controls ($ (l) + 1.5*(xdist) + (0,0.4) $)
+        .. ($ (l) + (0.1, +0.1) $);
+      \draw[ifo, thick, ->] ($ (d) + (0.1, +0.05) $)
+        .. controls ($ (f) - 2*(xdist) + (0,0.5) $)
+        .. ($ (f) + (-0.1, +0.1) $)
+        node[midway, above] {\scriptsize\textcolor{black}{$\vct{T}_{\nu,\mu}^{\mathrm{ifo}}$}};
+
+      \draw[ofs, thick, ->] ($ 0*(xdist)+(startingPoint)+(0,0.3)$)
+        -- ($ (h) - (0,0.2) $)
+        node[midway, right] {\scriptsize\textcolor{black}{$\vct{T}_{\sigma}^{\mathrm{ofs}}$}};
+
+      \draw[ofs, thick, ->] ($ 1*(xdist)+(startingPoint)+(0,0.3)$)
+        -- ($ (i) - (0,0.2) $);
+      \draw[ofs, thick, ->] ($ 2*(xdist)+(startingPoint)+(0,0.3)$)
+        -- ($ (j) - (0,0.2) $);
+      \draw[ofs, thick, ->] ($ 6*(xdist)+(startingPoint)+(0,0.3)$)
+        -- ($ (n) - (0,0.2) $);
+      \draw[ofs, thick, ->] ($ 7*(xdist)+(startingPoint)+(0,0.3)$)
+        -- ($ (o) - (0,0.2) $);
+
+      \draw[ofo, thick, ->] ($ (h) + (-0.1,0.1) $)
+        -- ($ (d) + (-0.15,-0.05) $);
+      \draw[ofo, thick, ->] ($ (i) + (+0.1,0.1) $)
+        -- ($ (d) + (+0.15,-0.05) $)
+        node[midway, right] {\scriptsize\textcolor{black}{$\vct{T}_{\mu,\sigma}^{\mathrm{ofo}}$}};
+
+      \draw[ifi, thick, ->] ($ (f) - (0.15,0.05) $)
+        -- ($ (l) - (0.1,-0.1) $)
+        node[midway, left] {\scriptsize\textcolor{black}{$\vct{T}_{\tau,\nu}^{\mathrm{ifi}}$}};
+
+    \end{tikzpicture}
+  }
+  \hfill\subfloat{%
+    \begin{tikzpicture}[scale=0.4]
+
+      \draw[ofs, ->, ultra thick] (0, -0) -- (1, -0) node[right] (l1) {\scriptsize\textcolor{black}{step 1) outgoing from source expansion $\vct{T}_{\sigma}^{\mathrm{ofs}}$}} ;
+      \draw[ofo, ->, ultra thick] (0, -1) -- (1, -1) node[right] (l2) {\scriptsize\textcolor{black}{step 2) outgoing from outgoing expansion $\vct{T}_{\mu,\sigma}^{\mathrm{ofo}}$}} ;
+      \draw[ifo, ->, ultra thick] (0, -2) -- (1, -2) node[right] (l3) {\scriptsize\textcolor{black}{step 3) incoming from outgoing expansion $\vct{T}_{\nu,\mu}^{\mathrm{ifo}}$}} ;
+      \draw[ifi, ->, ultra thick] (0, -3) -- (1, -3) node[right] (l4) {\scriptsize\textcolor{black}{step 4) incoming from incoming expansion $\vct{T}_{\tau,\nu}^{\mathrm{ifi}}$}} ;
+      \draw[tfi, ->, ultra thick] (0, -4) -- (1, -4) node[right] (l5) {\scriptsize\textcolor{black}{step 5) target from incoming expansion $\vct{T}_{\tau}^{\mathrm{tfi}}$}} ;
+      \draw[dir, ->, ultra thick] (0, -5) -- (1, -5) node[right] (l6) {\scriptsize\textcolor{black}{step 5) immediate computation}} ;
+      \draw[fill, highlight] (0.5, -6) circle (3pt) node[right] (l7) at ($ (l6.west) + (0, -1)$){\scriptsize\textcolor{black}{target particles $p_j$}};
+      \draw[fill, black!40 ] (0.5, -7) circle (3pt) node[right] (l8) at ($ (l7.west) + (0, -1)$){\scriptsize\textcolor{black}{source particles $p_i$}};
+
+      \node (leftCorner) at ($ (l1.west) + (-1, 0) $) {};
+      \node[draw, fit=(leftCorner) (l1) (l2) (l3) (l4) (l5) (l6) (l7) (l8)] {};
+    \end{tikzpicture}
+  }
+  \hfill\null
+  \caption{Flow of information through the tree (1D case)}
+  \label{fig:tree}
+\end{figure}

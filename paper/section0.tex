@@ -1,0 +1,31 @@
+\section{Introduction} \label{introduction}
+
+The \gls{fmm} is one of the ``Top Ten Algorithms of the \nth{20} Century'', and the youngest of the group \cite{article}.
+It was first introduced by Greengard and Rokhlin in 1987 for the N-body simulation problem, such as star formation triggered by galaxy interactions in modified gravity or the coulombic interaction of microscopic, charged particles \cite{Greengard1987AFA}.
+The problem with simulating these systems is that it requires an amount of work that grows quadratically with the number of particles in the system \cite{SicchaSeminar}.
+Therefore, \gls{fmm} was introduced, which provides an approximation of the driving force term, in this way, eliminating the quadratic complexity.
+While the direct computation requires a time complexity of $\mathcal{O}(N^2)$, the \gls{fmm} has linear complexity, requires only $\mathcal{O}(N)$ operations \cite{Martinsson2015}.
+In general terms, the \gls{fmm} describes a set of algorithms exhibiting linear or near-linear complexity for calculating all pairwise interactions between $N$ particles, provided that there exists a pairwise interaction kernel, such as kernels associated with elasticity, gravitation, wave propagation, etc.
+Moreover, the \gls{fmm} and its descendants use quad-trees or oct-trees to hierarchically split the computing domain and are frequently referred to as ``tree code'' algorithms.
+Such techniques are well-suited for multi-core and parallel computing systems because of their tree structure, which allows them to adaptively refine non-uniform charge distributions \cite{Martinsson2015}.
+
+\subsection{The Problem Setting}
+
+Suppose we have $N$ particles $p_i$ placed at positions $x_i \in \mathbb{R}^2$.
+\todo{are complex numbers.}
+Each of these particles has a mass $m_i$, and interacts with every other particle using some long-range force defined as:
+$F_{ij}(\Delta x, M)$ where $\Delta x = x_i - x_j$ is the distance between to distinct particles and $M=m_i m_j$ is their mass product.
+The aim is to obtain the net force experienced by particle $p_i$, which is calculated by summing all the pairwise interactions as \cite{SicchaSeminar}:
+\todo{add potential. Force is derivative of potential.}
+\begin{equation}
+  f_i = \sum_{j=1, i\neq j}^N F_{ij}(x_i - x_j, m_i m_j)
+\end{equation}
+
+Taking into consideration gravitational interactions in 2D only, the pairwise force is written as \cite{SicchaSeminar}:
+\begin{equation}
+  F_{ij}(\Delta x, M) = -M \frac{\Delta x}{\|\Delta x\|_2^2}
+\end{equation}
+
+\todo{idea behind the expansions}
+\todo{sinnbild for a expansion}
+\todo{derivation of outgoing expansion}
