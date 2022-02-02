@@ -1,0 +1,449 @@
+\section{The Algorithm}
+\label{algorithm}
+
+\newcommand\scaleFigures{0.8} % this variable defines how the figures for the steps are scaled, relatively to the chosen size.
+
+This section focuses on explaining the \gls{fmm} algorithm by introducing the underlying data structure and giving a step by step introduction of its necessary operations.
+The general idea behind the algorithm is to reduce the number of pairwise interactions by introducing approximations representing entire ``clusters'' of interactions.
+By doing so, each of the $N$ target particles $p_j$ immediately interacts with only a few close particles, for all other ``distant'' interactions, the approximations are considered.
+
+\subsection{A Tree of Boxes, Neighbors and Interaction Lists}
+
+To achieve linear complexity, the \gls{fmm} utilizes a tree based structure, in our 2D case a quad-tree.
+The root node of the tree corresponds to the domain $\Omega$.
+From the root, the domain is recursively subdivided in four equal-sized nodes until every node contains less than $s$ particles.
+Nodes that do not need further refinement are called the leafs or leaf nodes of the tree \cite{Martinsson2015}.
+
+Given two distinct nodes $\sigma,\tau$, we define the following \cite{Martinsson2015}:
+\begin{description}
+  \item[The parent] of $\tau$ is the node on the next coarser level that contains $\tau$.
+  \item[The children] of $\tau$ compose the set $\mathcal{L}_{\tau}^\text{child}$ of nodes with $\tau$ as their parent.
+  \item[The neighbors] of $\tau$ compose the set $\mathcal{L}_{\tau}^\text{nei}$ of nodes on the same level that directly touch $\tau$.
+  \item[The interaction list] of $\tau$ is the set $\mathcal{L}_{\tau}^\text{int}$ of all nodes $\sigma$ such that $\sigma$ and $\tau$ are on the same level, and do not touch each other, but their parents touch each other.
+  \item[$\sigma$ is well-separated] from $\tau$ if they are on the same level and not neighbors.
+\end{description}
+
+\subsection{The Fast Multipole Method}
+
+In the following, we elaborate on the main steps of the algorithm as described by Martinsson in \cite{Martinsson2015}, the mathematical details are given in \cref{operators}.
+
+\begin{enumerate}
+  \setcounter{enumi}{-1}
+
+  \item \textbf{Construct the tree and all interaction lists.}
+    \\
+    Before calculating any forces, we need to build the tree data structure and determine the interaction lists, as described above.
+    This has complexity $\mathcal{O}(N\log{N})$, however, it needs to be done only once during the initialization. Hence, for a sufficiently long simulation, this initial effort can be neglected.
+    \\
+    \cref{fig:tree} shows how the information of all source particles $p_i$ propagates to the target particles $p_j$.
+    The differently colored arrows in this figure represent the different steps of the algorithm which are described below.
+    \input{tree-image.tex}
+    \label{it:init}
+
+  \item \textbf{Outgoing from source expansion $\vct{T}_{\sigma}^{\mathrm{ofs}}$}
+    \\
+%    Compute: $\hat{\vct{q}}^{\tau}=\vct{T}_{\tau}^{\mathrm{ofs}} \vct{q}\left(I_{\tau}\right)$
+    Within each leaf node $\sigma$, the potentials of all source particles $p_i$ are approximated at the center $\vct c_\sigma$ of the node.
+    These approximations are then summed up to a ``virtual pole'' $p_{\vct c_\sigma}$ as represented in \cref{fig:ofs:a,fig:ofs:b}.
+    This representation of the potentials is called outgoing expansion and obtained by applying the operator $\vct{T}_{\sigma}^{\mathrm{ofs}}$ to the particles $p_i$.
+    As will become clear in \cref{operators}, the outgoing expansion of $\sigma$ is valid only in nodes which are well-separated from $\sigma$.
+    Since every particle contributes to exactly one outgoing expansion, the complexity of step~\ref{it:ofs} is $\mathcal{O}(N)$.
+
+    \begin{figure}
+      \centering
+      \null\hfill%
+      \subfloat[]{%
+        \label{fig:ofs:a}
+        \begin{tikzpicture}[scale=0.5*\scaleFigures]
+          \pgfmathsetseed{42}
+          \draw (0,0) rectangle (8,8);
+          \foreach \x in {1,...,320} {
+            \fill[black!40] (rnd*7.8+0.1, rnd*7.8+0.1) circle (2pt);
+          }
+          \fill[white] (2,2) rectangle (4,4);
+          \foreach \x in {1,...,20} {
+            \fill[black!40] (rnd*1.8+2.1, rnd*1.8+2.1) circle (2pt);
+          }
+          \draw[step=2] (0,0) grid (8,8);
+          \draw[ultra thick, highlight] (3,3) circle (2);
+          \node (sigma) at (3, 3) {\footnotesize{$\vct c_\sigma$}};
+        \end{tikzpicture}
+      }
+      \hfill\subfloat[]{%
+        \label{fig:ofs:b}
+        \begin{tikzpicture}[scale=1*\scaleFigures]
+          \pgfmathsetseed{42}
+          \clip[draw] (3,3) circle (2);
+          \draw (0,0) rectangle (8,8);
+          \foreach \x in {1,...,320} {
+            \fill[black!40] (rnd*7.8+0.1, rnd*7.8+0.1) circle (2pt);
+          }
+          \fill[white] (2,2) rectangle (4,4);
+          \node (sigma) at (3,3) {};
+          \foreach \x in {1,...,20} {
+            \node (p) at (rnd*1.8+2.1, rnd*1.8+2.1) {};
+            \fill[black!40] (p) circle (2pt);
+            \draw[ofs, ->, thick] (p) -- (sigma);
+          }
+          \draw[step=2] (0,0) grid (8,8);
+          \draw[ultra thick, highlight] (3,3) circle (2);
+          \fill[ofs] (sigma) circle (3pt);
+          \node[left] (sigma) at (3, 3) {\scriptsize{$p_{\vct c_\sigma}$}};
+        \end{tikzpicture}
+      }
+      \hfill\subfloat[]{%
+        \label{fig:ofs:c}
+        \begin{tikzpicture}[scale=0.5*\scaleFigures]
+          \pgfmathsetseed{42}
+          \draw (0,0) rectangle (8,8);
+          \draw[step=2] (0,0) grid (8,8);
+
+          \foreach \x in {1,3,5,7} {
+            \foreach \y in {1,3,5,7} {
+              \fill[ofs] (\x, \y) circle (5pt);
+          }}
+          \node (sigma) at (3.6, 2.6) {\scriptsize{$p_{\vct c_\sigma}$}};
+        \end{tikzpicture}
+      }
+      \hfill\null
+      \caption{Step 1 of the \gls{fmm}}
+      \label{fig:ofs}
+    \end{figure}
+    \label{it:ofs}
+
+  \item \textbf{Outgoing from outgoing expansion $\vct{T}_{\mu,\sigma}^{\mathrm{ofo}}$}
+    \\
+%    Compute: $\hat{\vct{q}}^{\tau}=\sum_{\sigma \in \mathcal{L}_{\tau}^{\text {child }}} \vct T_{\tau, \sigma}^{\text {ofo }} \hat{\vct{q}}^{\sigma}$
+    After approximating $p_{\vct c_\sigma}$ for all leaf nodes $\sigma$, the information must be distributed throughout the tree.
+    To this end, all child nodes $\sigma$ pass their information to their parent node $\mu$ to determine its outgoing expansion.
+    Just like before, the outgoing expansion is an approximation to the potential caused by the particles inside $\mu$, which is valid only in well-separated nodes.
+    To avoid considering every particle again, the outgoing expansion of $\mu$ is obtained by translating the expansions of its children to the center of $\mu$ via the operator $\vct{T}_{\mu,\sigma}^{\mathrm{ofo}}$.
+    By summing the translated expansions, we obtain the outgoing expansion of $\mu$ at the new ``virtual pole'' $p_{\vct c_\mu}$, compare \cref{fig:ofo}.
+    For the approximated potential to be present at each node, this step is recursively repeated up to the root node.
+    Steps \ref{it:ofs} and \ref{it:ofo} are therefore known as the upward-pass.
+    As the total number of nodes in the tree is of order $N$, step~\ref{it:ofo} has complexity $\mathcal{O}(N)$.
+
+    \begin{figure}
+      \centering
+      \null\hfill\subfloat[]{
+      \label{fig:ofo:child}
+        \begin{tikzpicture}[scale=0.5*\scaleFigures]
+          \pgfmathsetseed{42}
+
+          \fill[upward!30] (3,5) rectangle (2,4)
+            node[left] (sigma) at (2.3,4.5) {\footnotesize\textcolor{black}{$\sigma$}};
+
+          \draw[step=1] (0,0) grid (8,8);
+          \draw[step=2, thick] (0,0) grid (8,8);
+
+          \node (mu) at (3,5) {};
+          \foreach[count=\i] \x in {(2.5,4.5), (3.5,4.5), (2.5,5.5), (3.5,5.5)} {
+            \fill[ofs] \x circle (5pt);
+            \draw[ofo, ->, thick] \x -- (mu);
+          }
+          \draw[ofo, pattern=north west lines, pattern color=ofo] (mu) circle (5pt);
+          \draw[ofo, pattern=north east lines, pattern color=ofo] (mu) circle (5pt);
+        \end{tikzpicture}
+        }
+      \hfill\subfloat[]{%
+      \label{fig:ofo:parent}
+        \begin{tikzpicture}[scale=0.5*\scaleFigures]
+          \pgfmathsetseed{42}
+
+          \fill[downward!30] (0,0) rectangle (8,2);
+          \fill[downward!30] (6,0) rectangle (8,8);
+          \fill[upward!30] (2,4) rectangle (4,6)
+            node[left] (sigma) at (2.2,4.6) {\footnotesize\textcolor{black}{$\mu$}};
+
+          \draw[step=2, thick] (0,0) grid (8,8);
+
+          \node (mu) at (3,5) {};
+          \foreach \x in {2.5,3.5} {
+            \foreach \y in {4.5,5.5} {
+              \node (sigma) at (\x, \y) {};
+              \draw[ofs, pattern=north west lines, pattern color=ofs] (sigma) circle (5pt);
+              \draw[ofs, pattern=north east lines, pattern color=ofs] (sigma) circle (5pt);
+              \draw[ofo, ->, thick] (\x, \y) -- (mu);
+          }}
+
+          \fill[ofo] (mu) circle (5pt);
+        \end{tikzpicture}
+        }
+      \hfill\null
+      \caption{Step 2 of the \gls{fmm}. The yellow highlighted area is well-separated from $\mu$.}
+      \label{fig:ofo}
+    \end{figure}
+    \label{it:ofo}
+
+  \item \textbf{Incoming from outgoing expansion $\vct{T}_{\nu,\mu}^{\mathrm{ifo}}$}
+ %    Compute: $\hat{\vct{u}}^{\tau}=\hat{\vct{u}}^{\tau}+\sum_{\sigma \in \mathcal{L}_{\tau}^{i n t}} \vct T_{\tau, \sigma}^{ifo} \hat{\vct{q}}^{\sigma}$ and $\hat{\vct{u}}^{\tau}=\hat{\vct{u}}^{\tau}+\vct T_{\tau, \sigma}^{\mathrm{ifi}} \hat{\vct{u}}^{\sigma}$
+    \\
+    After the upward-pass, every node $\mu$ in the tree contains approximations to the potentials caused by the particles located inside $\mu$.
+    To calculate the interactions between particles, this information needs to be spread to the other nodes.
+    For this, each node gathers the expansions from the nodes in its interaction list.
+    More precisely, by applying the operator $\vct{T}_{\nu,\mu}^{\mathrm{ifo}}$ to the outgoing expansions of nodes in $\mathcal{L}_\nu^\text{int}$ and summing the results, the incoming expansion of $\nu$ is obtained.
+    In contrast to the outgoing expansion, the incoming expansion approximates the potentials caused by particles located outside of $\nu$.
+    As mentioned above, the outgoing expansions of the neighbors of $\nu$ are not valid inside $\nu$, hence, only well-separated nodes are considered.
+    Likewise, interactions with nodes beyond the interaction list can be ignored since they are handled on the coarser levels (compare \cref{fig:ifo:parent,fig:ifo:child}).
+    Step~\ref{it:ifo} also has a complexity of $\mathcal{O}(N)$ because a constant amount of work is performed for all $\mathcal{O}(N)$ nodes.
+    \label{it:ifo}
+
+  \item \textbf{Incoming from incoming expansion $\vct{T}_{\tau,\nu}^{\mathrm{ifi}}$}
+    \\
+    After step~\ref{it:ifo}, an incoming expansion is present at each node $\nu$ for each level.
+    This only considers the nodes contained in the interaction list $\mathcal{L}_{\nu}^\text{int}$ of $\nu$.
+    What is left, is to pass the potential information, gathered at each refinement level, down the tree up to the leaf nodes.
+    Together with step~\ref{it:ifo} this is called the downward-pass.
+    \\
+    Complementary to $\vct{T}_{\mu,\sigma}^{\mathrm{ofo}}$ in step~\ref{it:ofo}, the potential information of the parent node $\nu$ is passed down to its children $\mathcal{L}_{\nu}^{\text{child}}$ and approximated at their respective centers $\vct c_\tau$ (compare \cref{fig:ifi}).
+    Accordingly, step~\ref{it:ifi} consists of performing constant amount of work for each node of the tree, so its time complexity is $\mathcal{O}(N)$.
+
+    Now it becomes clear why in step~\ref{it:ifo} we considered only nodes which are in the interaction list of $\nu$.
+    As can be seen from \cref{fig:ifo:child}, at each refinement level there are some well-separated nodes, that were not well-separated on coarser levels, and therefore not considered yet.
+    These missing approximations to the potentials from the nodes $\widetilde\mu$ are added to the incoming expansion of $\tau$ during the downward-pass.
+    Consequently, on the finer level only the ``new'' well-separated nodes $\widetilde\mu$ which were not already considered on the coarser levels are elements of $\mathcal{L}_\tau^\text{int}$.
+
+    \begin{figure}
+      \centering
+        \null\hfill
+        \subfloat[]{%
+        \label{fig:ifo:parent}
+          \begin{tikzpicture}[scale=0.5*\scaleFigures]
+            \pgfmathsetseed{42}
+
+            \fill[downward!30] (2,4) rectangle (4,6);
+            \fill[upward!30] (0,0) rectangle (8,2);
+            \fill[upward!30] (6,0) rectangle (8,8);
+
+            \draw[step=2, very thick] (0,0) grid (8,8);
+
+            \node[left] (nu) at (3,5) {$\nu$};
+            \node (nu) at (3,5) {};
+            \foreach \x in {1,3,5,7} {
+              \node (mu) at (\x,1) {};
+              \fill[ofo] (mu) circle (5pt);
+              \draw[ifo, ->, thick] (mu) -- (nu);
+            }
+            \foreach \y in {3,5,7} {
+              \node (mu) at (7,\y) {};
+              \fill[ofo] (mu) circle (5pt);
+              \draw[ifo, ->, thick] (mu) -- (nu);
+            }
+            \node[below right] (mu) at (mu) {$\mu$};
+
+            \fill[ifi] (nu) circle (5pt);
+          \end{tikzpicture}
+        }
+        \hfill\subfloat[]{%
+          \label{fig:ifi}
+          \begin{tikzpicture}[scale=0.5*\scaleFigures]
+            \pgfmathsetseed{42}
+            \fill[downward!30] (2,4) rectangle (3,5);
+
+            \draw[step=1            ] (0,0) grid (8,8);
+            \draw[black!30, pattern=north west lines, pattern color=highlight!40] (0, 0) rectangle (8, 2);
+            \draw[black!30, pattern=north west lines, pattern color=highlight!40] (6, 2) rectangle (8, 8);
+            \draw[step=2, very thick] (0,0) grid (8,8);
+
+            \node[below] (nu) at (3,5) {$\nu$};
+            \node (nu) at (3,5) {};
+            \foreach \tau in {(2.5, 4.5), (3.5, 4.5), (2.5, 5.5), (3.5, 5.5)}
+            {
+              \node (tau) at \tau {};
+              \fill[ifi!50] \tau circle (5pt);
+              \draw[ifi, ->] (nu.center) -- \tau;
+            }
+            \node (tau) at ($ (tau) + (0.2, -0.2) $) {$\tau$};
+            \draw[ifi, pattern=north west lines, pattern color=ifi] (nu) circle (5pt);
+          \end{tikzpicture}
+        }
+        \hfill\subfloat[]{%
+          \label{fig:ifo:child}
+          \begin{tikzpicture}[scale=0.5*\scaleFigures]
+            \pgfmathsetseed{42}
+
+            \fill[upward!30] (0, 6) rectangle (6, 8);
+            \fill[upward!30] (0, 2) rectangle (1, 6);
+            \fill[upward!30] (0, 2) rectangle (6, 3);
+            \fill[upward!30] (4, 2) rectangle (6, 8);
+            \fill[downward!30] (2,4) rectangle (3,5);
+
+            \draw[black!30, pattern=north west lines, pattern color=highlight!40] (0, 0) rectangle (8, 2);
+            \draw[black!30, pattern=north west lines, pattern color=highlight!40] (6, 2) rectangle (8, 8);
+
+            \draw[step=1            ] (0,2) grid (6,8);
+            \draw[step=2, very thick] (0,0) grid (8,8);
+
+            \node (nu) at (2.5,4.5) {};
+
+            \foreach \x in {0.5, 1.5, ..., 5.5}
+            \foreach \y in {2.5, 6.5, 7.5} {
+              \node (mu) at (\x,\y) {};
+              \fill[ofo] (mu) circle (5pt);
+              \draw[ifo, ->] (mu) -- (nu);
+            }
+            \foreach \x in {0.5, 4.5, 5.5}
+            \foreach \y in {3.5, 4.5, 5.5} {
+              \node (mu) at (\x,\y) {};
+              \fill[ofo] (mu) circle (5pt);
+              \draw[ifo, ->] (mu) -- (nu);
+            }
+            \node (mu) at ($ (mu) + (0.2, -0.2) $) {$\widetilde\mu$};
+
+            \node[below, circle, inner sep=0.2pt, fill, color=white] (nu) at (2.5,4.5) {\textcolor{black}{$\tau$}};
+            \fill[ifi] (2.5,4.5) circle (5pt);
+          \end{tikzpicture}
+        }
+      \hfill\null
+      \caption{Steps \ref{it:ifo} and \ref{it:ifi} of the \gls{fmm}. The interaction lists of the nodes $\nu$ and $\tau$ are highlighted in gray.}
+      \label{fig:ifo}
+    \end{figure}
+    \label{it:ifi}
+
+  \item \textbf{Target from incoming expansion $\vct{T}_{\tau}^{\mathrm{tfi}}$}
+  %\item Compute: $\vct{u}\left(I_{\tau}\right)=\vct{T}_{\tau}^{\mathrm{tfi}}\hat{\vct{u}}^{\tau}+\vct{A}\left(I_{\tau}, I_{\tau}\right) \vct{q}\left(I_{\tau}\right)+\sum_{\sigma \in \mathcal{L}_{\tau}^{\mathrm{nei}}} \vct{A}\left(I_{\tau}, I_{\sigma}\right) \vct{q}\left(I_{\sigma}\right)$
+
+    In the last step, the resulting potential approximations are applied to the target particles $p_j$.
+    For each leaf node $\tau$, the incoming expansion is evaluated at the locations of the target particles $p_j$ and the resulting forces are calculated.
+    This operation is denoted by $\vct{T}_{\tau}^{\mathrm{tfi}}$ and represented in \cref{fig:tfi:scope}.
+    The complexity of this step is $\mathcal{O}(N)$ as it involves constant work for each particle.
+
+    Until now, only the well-separated nodes on all refinement-levels were considered.
+    However, as can be seen from \cref{fig:tfi:overview}, there are also not well-separated source particles $p_i$ that influence the target particles $p_j$, i.e. particles in the neighbors $\mathcal{L}_{\tau}^{\mathrm{nei}}$ of the current node $\tau$, as well as the node $\tau$ itself.
+    These source particles are too close to the targets $p_j$ so that their potentials can not be approximated without introducing overly large errors.
+    Therefore, they are handled in a direct manner using \cref{equ:force} as illustrated in \cref{fig:dir:scope}.
+    Since the total number of direct source particles $p_i$ is bounded by the constant $9s$ for each target particle $p_j$, the complexity of the direct computation is $\mathcal{O}(N)$ as well.
+
+    \begin{figure}
+      \centering
+      \null\hfill
+      \subfloat[]{%
+        \label{fig:tfi:overview}
+        \begin{tikzpicture}[scale=0.5*\scaleFigures]
+          \draw[black!30, pattern=north west lines, pattern color=highlight!40] (0, 0) rectangle (8, 8);
+          \fill[white] (3, 3) rectangle (6, 6);
+          \draw[step=1            ] (2,2) grid (6,6);
+          \draw[step=2, very thick] (0,0) grid (8,8);
+
+          \node (pj) at (rnd*0.8+4.1, rnd*0.8+4.1) {};
+          \fill[tfi] (pj) circle (2pt);
+
+          \foreach \x in {1,...,15} {%
+            \node (pi) at (rnd*0.8+3.1, rnd*2.8+3.1) {};
+            \fill[black!40] (pi) circle (2pt);
+          }
+          \foreach \x in {1,...,15} {%
+            \fill[black!40] (rnd*0.8+5.1, rnd*2.8+3.1) circle (2pt);
+          }
+          \foreach \x in {1,...,5} {%
+            \fill[black!40] (rnd*0.8+4.1, rnd*0.8+3.1) circle (2pt);
+          }
+          \foreach \x in {1,...,5} {%
+            \fill[black!40] (rnd*0.8+4.1, rnd*0.8+5.1) circle (2pt);
+          }
+
+          \foreach \x in {1,...,4} {%
+            \fill[tfi] (rnd*0.8+4.1, rnd*0.8+4.1) circle (2pt);
+          }
+
+          \fill[ifi] (4.5, 4.5) circle (5pt);
+          \node[right] (nu) at (4.5, 4.5) {$\tau$};
+
+          \draw[ultra thick, highlight] (4.5,4.5) circle (2.5);
+          \draw[ultra thick, tfi] (4.5,4.5) circle (1);
+        \end{tikzpicture}
+      }
+      \hfill\subfloat[]{%
+        \label{fig:tfi:scope}
+        \begin{tikzpicture}[scale=1.8*\scaleFigures]
+          \clip[draw] (4.5,4.5) circle (1);
+          \draw[black!30, pattern=north west lines, pattern color=highlight!40] (0, 0) rectangle (8, 8);
+          \fill[white] (3, 3) rectangle (6, 6);
+          \draw[step=1            ] (2,2) grid (6,6);
+          \draw[step=2, very thick] (0,0) grid (8,8);
+
+          \node (nu) at (4.5, 4.5) {};
+
+          \node (pj) at (rnd*0.8+4.1, rnd*0.8+4.1) {};
+          \fill[tfi] (pj) circle (1pt);
+          \draw[tfi, ->] (nu) -- (pj);
+
+          \foreach \x in {1,...,15} {
+            \node (pi) at (rnd*0.8+3.1, rnd*2.8+3.1) {};
+            \fill[black!40] (pi) circle (1pt);
+          }
+          \foreach \x in {1,...,15} {
+            \node (pi) at (rnd*0.8+5.1, rnd*2.8+3.1) {};
+            \fill[black!40] (pi) circle (1pt);
+          }
+          \foreach \x in {1,...,5} {
+            \node (pi) at (rnd*0.8+4.1, rnd*0.8+3.1) {};
+            \fill[black!40] (pi) circle (1pt);
+          }
+          \foreach \x in {1,...,5} {
+            \node (pi) at (rnd*0.8+4.1, rnd*0.8+5.1) {};
+            \fill[black!40] (pi) circle (1pt);
+          }
+          \node[below right] (pi) {$p_i$};
+          \foreach \x in {1,...,4} {
+            \node (pj) at (rnd*0.8+4.1, rnd*0.8+4.1) {};
+            \fill[tfi] (pj) circle (1pt);
+            \draw[tfi, ->] (nu) -- (pj);
+          }
+          \node[below left] (pj) at (pj) {\scriptsize{$p_j$}};
+
+          \fill[ifi] (nu) circle (2.5pt);
+          \node[right] (nu) at (4.5, 4.5) {$p_{\vct c_\tau}$}; \draw[ultra thick, tfi] (4.5,4.5) circle (1);
+        \end{tikzpicture}
+      }
+      \hfill\subfloat[]{%
+        \label{fig:dir:scope}
+        \begin{tikzpicture}[scale=6/8*\scaleFigures]
+          \clip[draw] (4.5,4.5) circle (2.5);
+          \draw[black!30, pattern=north west lines, pattern color=highlight!40] (0, 0) rectangle (8, 8);
+          \fill[white] (3, 3) rectangle (6, 6);
+          \draw[step=1            ] (2,2) grid (6,6);
+          \draw[step=2, very thick] (0,0) grid (8,8);
+
+          \node (pj) at (rnd*0.8+4.1, rnd*0.8+4.1) {};
+
+          \foreach \x in {1,...,15} {
+            \node (pi) at (rnd*0.8+3.1, rnd*2.8+3.1) {};
+            \fill[black!40] (pi) circle (2pt);
+            \draw[dir, ->] (pi) -- (pj);
+          }
+          \node[below left] (tmp) at (pi) {\textcolor{black}{\scriptsize{$\widetilde{p}_i$}}};
+          \foreach \x in {1,...,15} {
+            \node (pi) at (rnd*0.8+5.1, rnd*2.8+3.1) {};
+            \fill[black!40] (pi) circle (2pt);
+            \draw[dir, ->] (pi) -- (pj);
+          }
+          \foreach \x in {1,...,5} {
+            \node (pi) at (rnd*0.8+4.1, rnd*0.8+3.1) {};
+            \fill[black!40] (pi) circle (2pt);
+            \draw[dir, ->] (pi) -- (pj);
+          }
+          \foreach \x in {1,...,5} {
+            \node (pi) at (rnd*0.8+4.1, rnd*0.8+5.1) {};
+            \fill[black!40] (pi) circle (2pt);
+            \draw[dir, ->] (pi) -- (pj);
+          }
+          \foreach \x in {1,...,4} {
+            \node (pi) at (rnd*0.8+4.1, rnd*0.8+4.1) {};
+            \fill[black!40] (pi) circle (2pt);
+            \draw[dir, ->] (pi) -- (pj);
+          }
+
+          \node[below, circle, inner sep=0.2pt, fill, color=white] (tmp) at ($ (pj) + (-0.1, 0.1) $) {\textcolor{black}{\scriptsize{$p_j$}}};
+          \fill[dir] (pj) circle (2pt);
+          \draw[ultra thick, highlight] (4.5,4.5) circle (2.5);
+        \end{tikzpicture}
+      }
+      \hfill\null
+      \caption{Step \ref{it:tfi} of the \gls{fmm}}
+      \label{fig:tfi}
+    \end{figure}
+    \label{it:tfi}
+\end{enumerate}
+
+As discussed, all steps of the \gls{fmm} have linear time complexity so the runtime of the \gls{fmm} is in $\mathcal{O}(N)$.

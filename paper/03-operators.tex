@@ -1,0 +1,118 @@
+\section{Operators}
+\label{operators}
+
+The previous section introduced the \gls{fmm} without going into details about the operators which are used to determine and apply the expansions.
+This section supplies the missing details.
+
+\subsection{Outgoing from Sources}
+
+In step~\ref{it:ofs} of the \gls{fmm}, we seek to find a fixed size representation of the potential caused by all the particles at positions $\vct x_i$ in a source box $\sigma$ centered around $\vct c_\sigma$.
+We can find this representation by summing the potentials of all particles in $\sigma$ and rearranging \cite{SicchaSeminar, Martinsson2015}:
+\begin{align}
+  \Psi(\vct x) &= \sum_i \Psi_i(\vct x)
+   = \sum_i m_i \log(\vct x - \vct x_i) \\
+  &= \sum_i m_i \log((\vct x - \vct c_\sigma) - (\vct x_i - \vct c_\sigma))
+   = \sum_i m_i \log\left(
+                  \left(\vct x - \vct c_\sigma \right)\cdot
+                  \left(1 - \frac{\vct x_i - \vct c_\sigma}{\vct x - \vct c_\sigma} \right)
+              \right) \\
+  &= \sum_i m_i \left( \log(\vct x - \vct c_\sigma) + \log \left(1 - \frac{\vct x_i - \vct c_\sigma}{\vct x - \vct c_\sigma} \right) \right)
+   = \sum_i m_i \left( \log(\vct x - \vct c_\sigma) - \sum_{k=1}^\infty \frac 1k \frac{(\vct x_i - \vct c_\sigma)^k}{(\vct x - \vct c_\sigma)^k} \right) \label{equ:ofs-taylor} \\
+  &= \hat{\vct q}_0^\sigma \log(\vct x - \vct c_\sigma) + \sum_{k=1}^\infty \frac{\hat{\vct q}_k^\sigma}{(\vct x - \vct c_\sigma)^k} \label{equ:ofs-series}
+\end{align}
+Where in \cref{equ:ofs-taylor} we do a Taylor expansion around $\frac{\vct x_i - \vct c_\sigma}{\vct x - \vct c_\sigma} = 0$.
+
+Now, if we truncate the series in \cref{equ:ofs-series} to $P-1$ terms, we obtain the outgoing expansion, i.e. $P$ complex valued coefficients \cite{Martinsson2015}:
+\begin{equation}
+  \begin{split}
+    \hat{\vct q}_0^\sigma &=   \sum_i m_i \\
+    \hat{\vct q}_k^\sigma &= - \sum_i \frac{m_i}{k} (\vct x_i - \vct c_\sigma)^k, \qquad k = 1 \dots P-1
+  \end{split}
+\end{equation}
+The operator that determines the outgoing expansion from the source particles is denoted by $\vct T_\sigma^\mathrm{ofs}$ \cite{Martinsson2015}.
+Note that the series in \cref{equ:ofs-series} only converges if $|\vct x_i - \vct c_\sigma| < |\vct x - \vct c_\sigma|$, which is guaranteed if the boxes of $\vct x_i$ and $\vct x$ are well-separated but not if they are neighboring.
+
+\subsection{Outgoing from Outgoing}
+
+In \cref{algorithm} we efficiently calculate the outgoing expansion of a parent box $\mu$ from the expansions of its children using the outgoing-from-outgoing translation operator $\vct T_{\mu, \sigma}^\mathrm{ofo}$.
+This operator translates the expansions which are centered around the center of the children $\vct c_\sigma$ to the center of the parent $\vct c_\mu$.
+It can be derived by rewriting the following two terms in \cref{equ:ofs-series} \cite{short-course, Martinsson2015}:
+\begin{align}
+  \log(\vct x - \vct c_\sigma)
+    &= \log((\vct x - \vct c_\mu) - (\vct c_\sigma - \vct c_\mu))
+     = \log(\vct x - \vct c_\mu) - \sum_{k=1}^\infty \frac 1k \frac{(\vct c_\sigma - \vct c_\mu)^k}{(\vct x - \vct c_\mu)^k} \\
+  (\vct x - \vct c_\sigma)^{-k}
+    &= ((\vct x - \vct c_\mu) - (\vct c_\sigma - \vct c_\mu))^{-k}
+     = \sum_{l=k}^\infty \binom{l-1}{k-1} \frac{(\vct c_\sigma - \vct c_\mu)^{l-k}}{(\vct x - \vct c_\mu)^l}
+\end{align}
+
+Truncating the series and rearranging the terms results in the translated outgoing expansion \cite{short-course, Martinsson2015}
+\begin{equation}
+   \hat{\vct q}_0^\mu \log(\vct x - \vct c_\mu) + \sum_{k=1}^{P-1} \frac{\hat{\vct q}_k^\mu}{(\vct x - \vct c_\mu)^k}
+   \label{equ:ofo-series}
+\end{equation}
+with
+\begin{equation}
+  \begin{split}
+    \hat{\vct q}_0^\mu &= \hat{\vct q}_{0}^{\sigma} \\
+    \hat{\vct q}_k^\mu
+      &= - \hat{\vct q}_{0}^{\sigma} \frac{1}{k} \left(\vct c_{\sigma}-\vct c_{\mu}\right)^{k}
+         + \sum_{j=1}^{k} \hat{\vct q}_{j}^{\sigma} \mat{k-1 \\ j-1} \left(\vct c_{\sigma}-\vct c_{\mu}\right)^{k-j}, \qquad k = 1 \dots P-1
+  \end{split}
+\end{equation}
+
+\subsection{Incoming from Outgoing}
+
+The outgoing expansion is a compact, approximate representation of the potential caused by particles located inside a disk which is valid everywhere outside of this disk.
+Additionally, we need a representation of the potential caused by particles located outside of a disk which is valid inside this disk.
+This representation is called incoming expansion and can be calculated from an outgoing expansion via the incoming-from-outgoing operator $\vct T_{\nu, \mu}^\mathrm{ifo}$ by introducing the following substitutions to \cref{equ:ofo-series} \cite{short-course, Martinsson2015}:
+\begin{align}
+  \log(\vct x - \vct c_\mu)
+    &= \log((\vct x - \vct c_\nu) - (\vct c_\mu - \vct c_\nu))
+     = \log(\vct c_\nu - \vct c_\mu) - \sum_{k=1}^\infty \frac 1k \frac{(\vct x - \vct c_\nu)^k}{(\vct c_\mu - \vct c_\nu)^k} \\
+  (\vct x - \vct c_\mu)^{-k}
+    &= ((\vct x - \vct c_\nu) - (\vct c_\mu - \vct c_\nu))^{-k}
+     = \frac 1{(\vct c_\nu - \vct c_\mu)^k} \sum_{l=0}^\infty \binom{l+k-1}{k-1} \frac{(\vct x - \vct c_\nu)^l}{(\vct c_\mu - \vct c_\nu)^l}
+\end{align}
+Note that with these substitutions, $\vct x$ appears in the numerator of the fraction, before it was in the denominator.
+This means that the series converges if $|\vct x - \vct c_\nu| < |\vct c_\mu - \vct c_\nu|$, i.e. if $\vct x$ is closer to the center of the incoming expansion $\vct c_\nu$ than is the center of the outgoing expansion $\vct c_\mu$.
+Accordingly, we obtain the incoming expansion of the form \cite{short-course, Martinsson2015}
+\begin{equation}
+  \sum_{k=0}^{P-1} \hat{\vct u}_k^\nu (\vct x - \vct c_\nu)^k
+  \label{equ:incoming}
+\end{equation}
+with
+\begin{equation}
+  \begin{split}
+    \hat{\vct u}_0^\nu &= \hat{\vct{q}}_0^\mu \log(\vct c_\nu - \vct c_\mu) + \sum_{j=1}^\infty \hat{\vct{q}}_j^\mu (-1)^j \frac 1 {(\vct c_\mu - \vct c_\nu)^j} \\
+    \hat{\vct u}_k^\nu &= -\hat{\vct{q}}_0^\mu \frac 1 {k(\vct c_\mu - \vct c_\nu)^k} + \sum_{j=1}^\infty \hat{\vct{q}}_j^\mu (-1)^j \mat{k+j-1\\j-1} \frac 1 {(\vct c_\mu - \vct c_\nu)^{k+j}}, \qquad k = 1 \dots P-1
+  \end{split}
+\end{equation}
+
+\subsection{Incoming from Incoming}
+
+Similar to the outgoing expansion, the incoming expansion can be translated to a new center $\vct c_\tau$.
+The new coefficients result from the incoming-from-incoming translation operator $\vct T_{\tau, \nu}^\mathrm{ifi}$ as follows \cite{Martinsson2015}:
+\begin{equation}
+  \hat{\vct u}_{k}^\tau = \sum_{j=k}^{\infty} \hat{\vct u}_{j}^\nu \binom jk \left(\vct c_\tau-\vct c_\nu\right)^{j-k}, \qquad k = 1 \dots P-1
+\end{equation}
+
+\subsection{Targets from Incoming}
+
+The incoming expansion of a node $\tau$ represents a potential which exerts forces on the particles in $\tau$.
+In the last step of the \gls{fmm}, these forces are determined by means of the targets-from-incoming operator $\vct T_\tau^\mathrm{tfi}$.
+For this, \cref{equ:force} is used, where the gradient of the potential is determined from \cref{equ:incoming} as follows \cite{short-course}:
+\begin{align}
+  \nabla \Re(\Psi(\vct x)) = \left(\Re\left(\der\Psi{\vct x}\right), -\Im\left(\der\Psi{\vct x}\right)\right)^T
+  && \text{where} &&
+  \left(\der\Psi{\vct x}\right) = \sum_{k=1}^{P-1} \hat{\vct u}_k^\tau k (\vct x - \vct c_\tau)^{k-1}
+\end{align}
+
+\subsection{Error Analysis}
+
+Due to the fact that all expansions are reduced to $P$ terms, the potentials estimated by the \gls{fmm} are not precise.
+In most cases, the global error is similar to the worst-case local truncation error \cite{articleErick}.
+In other words, it scales as  $\alpha^P$ where  $\alpha = \frac{\sqrt{2}}{4-\sqrt{2}} \approx 0.5469$.
+Therefore, in order to achieve a given tolerance $\epsilon$, it should hold that $P \approx \frac{\log (\epsilon)}{\log (\alpha)}$ \cite{Martinsson2015}.
+Moreover, if we assume that each leaf holds $\mathcal{O}(P)$ sources, the asymptotic complexity of the 2D \gls{fmm} is $\mathcal{O}(P N)$.
+As a result, the overall complexity scales as $\mathcal{O}(\log \left( \frac 1 \epsilon \right) N)$ as $\epsilon \rightarrow 0$ and $N \rightarrow \infty$ \cite{Martinsson2015}.

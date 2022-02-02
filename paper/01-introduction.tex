@@ -1,0 +1,21 @@
+\section{Introduction} \label{introduction}
+
+The \gls{fmm} was first introduced by Greengard and Rokhlin in 1987 for the N-body simulation problem with pairwise interactions, such as elasticity, gravitation, electrostatics, or wave propagation \cite{Greengard1987AFA, Martinsson2015}.
+N-body problems typically have a complexity of $\mathcal{O}(N^2)$ \cite{SicchaSeminar}.
+The \gls{fmm} solves this problem by introducing an approximation of the driving force term, achieving linear complexity \cite{Martinsson2015}.
+Moreover, the \gls{fmm} uses quad-trees or oct-trees to hierarchically split the computing domain and thus is frequently referred to as a ``tree code'' algorithm.
+The tree structure makes this algorithm well-suited for multi-core and parallel computing systems \cite{Martinsson2015}.
+This report first sheds some light on the inner workings of the FMM by providing in depth details on the steps of the algorithm and analyzing its time complexity.
+Afterwards, the operators used by the algorithm are introduced and a rough analysis of the approximation error is given.
+Lastly, details of the implementation of the rotating galaxy simulation are shown, as well as the obtained results.
+After reading the report, the reader should comprehend the algorithm’s underlying concepts and understand how the linear time complexity is achieved.
+
+In this paper, we consider $N$ particles $p_i$ placed at positions $\vct x_i \in \Omega \subset \mathbb{R}^2$, where $\Omega$ is a rectangular domain.
+For the ease of notation, we think of $\vct x_i$ as a point in the complex plane, where $\Re(\vct x)$ is the real part of $\vct x$.
+Each of these particles induces a long-range potential $\Psi_i(\vct x) = m_i \log(\vct x - \vct x_i)$, where $m_i$ is the mass of the source particle $p_i$.
+The aim is to obtain the net force $\vct f_j$ acting on the target particle $p_j$, which is the sum of all pairwise interactions \cite{short-course}:
+\begin{equation}
+  \vct f_j = \sum_{i=1, i\neq j}^N \vct F_{ij}(\vct x_i - \vct x_j, m_i m_j)
+      = -\sum_{i=1, i\neq j}^N m_j \nabla \Re(\Psi_i(\vct x_j))
+  \label{equ:force}
+\end{equation}

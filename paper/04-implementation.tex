@@ -1,0 +1,27 @@
+\section{Implementation}
+\label{implementation}
+
+In this section we introduce a few points that we deem helpful for implementing the \gls{fmm}.
+
+First, the particles might be distributed very unevenly inside the computational domain, e.g. in the case of colliding galaxies.
+In these cases building the tree up to a fixed level, ignoring the particle distribution, results in a tree where either the majority of the particles is located in a small subset of the leaf nodes or the majority of leaf nodes is empty.
+Both cases lead to non-linear complexity of the force calculation.
+Therefore, it is important to subdivide boxes exactly if they contain more than a fixed number of particles.
+The resulting tree consists of leaf boxes of varying sizes and is commonly called an adaptive tree \cite{short-course}.
+
+Since adaptive trees contain leaf boxes of different sizes, neighboring leaf boxes might reside on different levels.
+Stated differently, neighbors of leaf boxes might be inner nodes.
+Remember that forces between neighboring leaf boxes must be calculated in a direct fashion.
+In the case of adaptive trees, this is also true for forces acting between particles in the large leaf box and particles in all leaf boxes of the neighboring inner node.
+
+Building the tree has complexity $\mathcal{O}(N \log N)$.
+To ensure that this cost is negligible compared to the force calculations, it is important to build the tree only once at the start of the simulation.
+However, in each time step every particle changes its position, and in consequence might move to a different leaf box.
+Therefore, the tree has to be repaired.
+This means moving particles to the correct node in the tree and minimizing the tree afterwards, i.e. deleting empty leaf boxes and merging leaf boxes which contain only a small number of particles \cite{griebel2007numerical}.
+
+Lastly, obtaining the interaction lists can be quite painful \cite{SicchaSeminar}.
+Our approach is to store links to the direct neighbors of each node in the tree data structure.
+The corresponding code is easy to separate from the main algorithm and easy to test.
+Thanks to the neighbor links it is straightforward to loop over all nodes in the interaction list of a child of a particular node, i.e. the interaction list of any node except the root node.
+As the interaction list of the root node is empty, we can safely ignore it.
